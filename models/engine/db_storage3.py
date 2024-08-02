@@ -41,50 +41,51 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
+
         """Query on the current database session."""
-        new_dict = {}
-        if cls:
-            # Check if cls is a valid model class
-            if cls in classes.values():
-                objs = self.__session.query(cls).all()
-                for obj in objs:
-                    key = f"{obj.__class__.__name__}.{obj.id}"
-                    new_dict[key] = obj
-        else:
-            # Query all classes if no specific class is provided
-            for clss in classes.values():
-                objs = self.__session.query(clss).all()
-                for obj in objs:
-                    key = f"{obj.__class__.__name__}.{obj.id}"
-                    new_dict[key] = obj
-        return new_dict
+    new_dict = {}
+    if cls:
+        # Check if cls is a valid model class
+        if cls in classes.values():
+            objs = self.__session.query(cls).all()
+            for obj in objs:
+                key = f"{obj.__class__.__name__}.{obj.id}"
+                new_dict[key] = obj
+    else:
+        # Query all classes if no specific class is provided
+        for clss in classes.values():
+            objs = self.__session.query(clss).all()
+            for obj in objs:
+                key = f"{obj.__class__.__name__}.{obj.id}"
+                new_dict[key] = obj
+    return new_dict
 
     def new(self, obj):
-        """Add the object to the current database session."""
+        """add the object to the current database session"""
         self.__session.add(obj)
 
     def save(self):
-        """Commit all changes of the current database session."""
+        """commit all changes of the current database session"""
         self.__session.commit()
 
     def delete(self, obj=None):
-        """Delete from the current database session obj if not None."""
+        """delete from the current database session obj if not None"""
         if obj is not None:
             self.__session.delete(obj)
 
     def reload(self):
-        """Reloads data from the database."""
+        """reloads data from the database"""
         Base.metadata.create_all(self.__engine)
         sess_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(sess_factory)
         self.__session = Session
 
     def close(self):
-        """Call remove() method on the private session attribute."""
+        """call remove() method on the private session attribute"""
         self.__session.remove()
 
     def get(self, cls, id):
-        """Retrieve one object based on the class and its ID."""
+        """Retrieve one object based on the class and its ID"""
         if cls in classes.values():
             return self.__session.query(cls).get(id)
         return None

@@ -21,10 +21,12 @@ def teardown_db(exception):
     """Close the SQLAlchemy session."""
     storage.close()
 
+
 @app.errorhandler(404)
 def page_not_found(error):
     """Return a JSON response for a 404 error."""
     return jsonify({'error': 'Not found'}), 404
+
 
 if __name__ == "__main__":
     host = getenv('HBNB_API_HOST', '0.0.0.0')

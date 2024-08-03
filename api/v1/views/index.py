@@ -6,7 +6,7 @@ from models import storage
 
 
 @app_views.route("/status", strict_slashes=False)
-def get_status():
+def status():
     """Returns the status of the API"""
     status = {
         "status": "OK"
@@ -19,7 +19,7 @@ def get_status():
 
 
 @app_views.route("/stats", strict_slashes=False)
-def get_stats():
+def stats():
     """Retrieve the number of each object by type"""
     stats = {
         "amenities": storage.count("Amenity"),

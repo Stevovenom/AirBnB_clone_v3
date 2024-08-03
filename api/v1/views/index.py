@@ -14,10 +14,12 @@ def get_status():
 @app_views.route('/stats', methods=['GET'])
 def get_stats():
     """Retrieve the number of each object by type"""
-    stats = {}
-    classes = ["Amenity", "City", "Place", "Review", "State", "User"]
-    for cls in classes:
-        cls_obj = getattr(models, cls, None)
-        if cls_obj:
-            stats[cls.lower() + 's'] = storage.count(cls_obj)
+    stats = {
+        "amenities": storage.count("Amenity"),
+        "cities": storage.count("City"),
+        "places": storage.count("Place"),
+        "reviews": storage.count("Review"),
+        "state": storage.count("State"),
+        "user": storage.count("User")
+    }
     return jsonify(stats)

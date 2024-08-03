@@ -8,14 +8,9 @@ from models import storage
 @app_views.route("/status", strict_slashes=False)
 def status():
     """Returns the status of the API"""
-    status = {
-        "status": "OK"
-    }
+    status = {"status": "OK"}
 
-    response = jsonify(status)
-    response.status_code = 200
-
-    return response
+    return jsonify(status)
 
 
 @app_views.route("/stats", strict_slashes=False)
@@ -37,7 +32,4 @@ def stats():
         "users": storage.count(User)
     }
 
-    response = jsonify(stats)
-    response.status_code = 200
-
-    return response
+    return jsonify(stats)

@@ -5,13 +5,20 @@ from api.v1.views import app_views
 from models import storage
 
 
-@app_views.route('/status', methods=['GET'])
+@app_views.route("/status", strict_slashes=False)
 def get_status():
     """Returns the status of the API"""
-    return jsonify({"status": "OK"})
+    status = {
+        "status": "OK"
+    }
+
+    response = jsonify(status)
+    response.status_code = 200
+
+    return response
 
 
-@app_views.route('/stats', methods=['GET'])
+@app_views.route("/stats", strict_slashes=False)
 def get_stats():
     """Retrieve the number of each object by type"""
     stats = {
@@ -20,6 +27,10 @@ def get_stats():
         "places": storage.count("Place"),
         "reviews": storage.count("Review"),
         "state": storage.count("State"),
-        "user": storage.count("User")
+        "users": storage.count("User")
     }
-    return jsonify(stats)
+
+    response = jsonify(stats)
+    response.status_code = 200
+
+    return response

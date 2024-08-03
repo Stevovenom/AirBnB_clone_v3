@@ -1,16 +1,14 @@
 #!/usr/bin/python3
-"""Index"""
-from flask import jsonify
+"""Module definition for blueprint routes"""
 from api.v1.views import app_views
+from flask import jsonify
 from models import storage
 
 
 @app_views.route("/status", strict_slashes=False)
 def status():
     """Returns the status of the API"""
-    status = {"status": "OK"}
-
-    return jsonify(status)
+    return jsonify({"status": "OK"})
 
 
 @app_views.route("/stats", strict_slashes=False)

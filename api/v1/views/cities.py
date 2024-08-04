@@ -6,6 +6,7 @@ from api.v1.views import app_views
 from models.city import City
 from models.state import State
 from models import storage
+from werkzeug.exceptions import BadRequest
 
 
 @app_views.route("/states/<state_id>/cities", methods=["GET"],
@@ -47,13 +48,16 @@ def delete_city(city_id):
                  strict_slashes=False)
 def create_city(state_id):
     """Create a new City object using a state ID"""
-    if not storage.get("State", str(state_id)):
+    try:
+        city_json = request.get_json()
+        if "name" not in city_json:
+            abort(400, 'Missing name')
+    except BadRequest:
+        abort(400, description='Not a JSON')
+
+    state_obj = storage.get(State, state_id)
+    if state_obj is None:
         abort(404)
-    city_json = request.get_json(silent=True)
-    if city_json is None:
-        abort(400, 'Not a JSON')
-    if "name" not in city_json:
-        abort(400, 'Missing name')
 
     city_json["state_id"] = state_id
     new_city = City(**city_json)
@@ -65,11 +69,12 @@ def create_city(state_id):
 @app_views.route("cities/<city_id>",  methods=["PUT"], strict_slashes=False)
 def update_city(city_id):
     """Update a City object with json input"""
-    city_json = request.get_json(silent=True)
-    if city_json is None:
-        abort(400, 'Not a JSON')
+    try:
+        city_json = request.get_json()
+    except BadRequest:
+        abort(400, description="Not a JSON")
 
-    city_obj = storage.get("City", str(city_id))
+    city_obj = storage.get(City, city_id)
     if city_obj is None:
         abort(404)
 

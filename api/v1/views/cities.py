@@ -6,7 +6,6 @@ from api.v1.views import app_views
 from models.city import City
 from models.state import State
 from models import storage
-from werkzeug.exceptions import BadRequest
 
 
 @app_views.route("/states/<state_id>/cities", methods=["GET"],
@@ -66,14 +65,12 @@ def create_city(state_id):
 @app_views.route("cities/<city_id>",  methods=["PUT"], strict_slashes=False)
 def update_city(city_id):
     """Update a City object with json input"""
-    city_obj = storage.get(City, city_id)
+    city_json = request.get_json(silent=True)
+    if city_json is None:
+        abort(400, 'Not a JSON')
+    city_obj = storage.get("City", str(city_id))
     if city_obj is None:
         abort(404)
-
-    try:
-        city_json = request.get_json()
-    except BadRequest:
-        abort(400, description="Not a JSON")
 
     for key, val in city_json.items():
         if key not in ["id", "created_at", "updated_at", "state_id"]:

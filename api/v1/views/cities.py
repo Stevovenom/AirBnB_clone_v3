@@ -48,16 +48,13 @@ def delete_city(city_id):
                  strict_slashes=False)
 def create_city(state_id):
     """Create a new City object using a state ID"""
-    state_obj = storage.get(State, state_id)
-    if state_obj is None:
+    city_json = request.get_json(silent=True)
+    if city_json is None:
+        abort(400, 'Not a JSON')
+    if not storage.get("State", str(state_id)):
         abort(404)
-
-    try:
-        city_json = request.get_json()
-        if "name" not in city_json:
-            abort(400, 'Missing name')
-    except BadRequest:
-        abort(400, description='Not a JSON')
+    if "name" not in city_json:
+        abort(400, 'Missing name')
 
     city_json["state_id"] = state_id
     new_city = City(**city_json)

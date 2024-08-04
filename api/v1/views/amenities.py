@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Amenity objects that handles all default RESTful API actions"""
+"""Amenity objects that handles all default RESTFul API actions"""
 
 from flask import jsonify, request, abort
 from models import storage
@@ -10,8 +10,8 @@ from api.v1.views import app_views
 @app_views.route('/amenities', methods=['GET'], strict_slashes=False)
 def get_amenities():
     """Retrieves the list of all Amenity objects"""
-    amenities = [amenity.to_dict()
-                 for amenity in storage.all(Amenity).values()]
+    amenities = [amenity.to_dict() for amenity in storage.all(Amenity)
+                 .values()]
     return jsonify(amenities)
 
 
@@ -40,11 +40,11 @@ def delete_amenity(amenity_id):
 @app_views.route('/amenities', methods=['POST'], strict_slashes=False)
 def create_amenity():
     """Creates an Amenity"""
-    if not request.json:
+    data = request.get_json(force=True, silent=True)
+    if not data:
         abort(400, description="Not a JSON")
-    if 'name' not in request.json:
+    if 'name' not in data:
         abort(400, description="Missing name")
-    data = request.get_json()
     amenity = Amenity(**data)
     amenity.save()
     return jsonify(amenity.to_dict()), 201
@@ -57,9 +57,9 @@ def update_amenity(amenity_id):
     amenity = storage.get(Amenity, amenity_id)
     if not amenity:
         abort(404)
-    if not request.json:
+    data = request.get_json(force=True, silent=True)
+    if not data:
         abort(400, description="Not a JSON")
-    data = request.get_json()
     ignore_keys = ['id', 'created_at', 'updated_at']
     for key, value in data.items():
         if key not in ignore_keys:

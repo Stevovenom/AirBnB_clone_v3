@@ -48,16 +48,16 @@ def delete_city(city_id):
                  strict_slashes=False)
 def create_city(state_id):
     """Create a new City object using a state ID"""
+    state_obj = storage.get(State, state_id)
+    if state_obj is None:
+        abort(404)
+
     try:
         city_json = request.get_json()
         if "name" not in city_json:
             abort(400, 'Missing name')
     except BadRequest:
         abort(400, description='Not a JSON')
-
-    state_obj = storage.get(State, state_id)
-    if state_obj is None:
-        abort(404)
 
     city_json["state_id"] = state_id
     new_city = City(**city_json)
@@ -69,14 +69,14 @@ def create_city(state_id):
 @app_views.route("cities/<city_id>",  methods=["PUT"], strict_slashes=False)
 def update_city(city_id):
     """Update a City object with json input"""
+    city_obj = storage.get(City, city_id)
+    if city_obj is None:
+        abort(404)
+
     try:
         city_json = request.get_json()
     except BadRequest:
         abort(400, description="Not a JSON")
-
-    city_obj = storage.get(City, city_id)
-    if city_obj is None:
-        abort(404)
 
     for key, val in city_json.items():
         if key not in ["id", "created_at", "updated_at", "state_id"]:

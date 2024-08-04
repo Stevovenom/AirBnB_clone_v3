@@ -65,12 +65,13 @@ def create_city(state_id):
 @app_views.route("cities/<city_id>",  methods=["PUT"], strict_slashes=False)
 def update_city(city_id):
     """Update a City object with json input"""
-    city_json = request.get_json(silent=True)
-    if city_json is None:
-        abort(400, 'Not a JSON')
     city_obj = storage.get("City", str(city_id))
     if city_obj is None:
         abort(404)
+
+    city_json = request.get_json(silent=True)
+    if city_json is None:
+        abort(400, 'Not a JSON')
 
     for key, val in city_json.items():
         if key not in ["id", "created_at", "updated_at", "state_id"]:

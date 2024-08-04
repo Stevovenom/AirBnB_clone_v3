@@ -3,9 +3,19 @@
 
 from flask import Flask, jsonify
 from models import storage
+import os
 from os import getenv
 from api.v1.views import app_views
 from flask_cors import CORS
+
+
+os.environ['HBNB_MYSQL_USER'] = 'hbnb_dev'
+os.environ['HBNB_MYSQL_PWD'] = 'hbnb_dev_pwd'
+os.environ['HBNB_MYSQL_HOST'] = 'localhost'
+os.environ['HBNB_MYSQL_DB'] = 'hbnb_dev_db'
+os.environ['HBNB_TYPE_STORAGE'] = 'db'
+os.environ['HBNB_API_HOST'] = '0.0.0.0'
+os.environ['HBNB_API_PORT'] = '5000'
 
 
 app = Flask(__name__)
@@ -29,6 +39,6 @@ def teardown_db(exception=None):
 
 
 if __name__ == '__main__':
-    host = os.getenv('HBNB_API_HOST', '0.0.0.0')
-    port = int(os.getenv('HBNB_API_PORT', 5000))
+    host = getenv('HBNB_API_HOST', '0.0.0.0')
+    port = int(getenv('HBNB_API_PORT', 5000))
     app.run(host=host, port=port, threaded=True, debug=True)

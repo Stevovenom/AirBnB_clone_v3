@@ -3,27 +3,15 @@
 
 from flask import Flask, jsonify
 from models import storage
-import os
 from os import getenv
 from api.v1.views import app_views
 from flask_cors import CORS
-
-
-os.environ['HBNB_MYSQL_USER'] = 'hbnb_dev'
-os.environ['HBNB_MYSQL_PWD'] = 'hbnb_dev_pwd'
-os.environ['HBNB_MYSQL_HOST'] = 'localhost'
-os.environ['HBNB_MYSQL_DB'] = 'hbnb_dev_db'
-os.environ['HBNB_TYPE_STORAGE'] = 'db'
-os.environ['HBNB_API_HOST'] = '0.0.0.0'
-os.environ['HBNB_API_PORT'] = '5000'
 
 
 app = Flask(__name__)
 app.register_blueprint(app_views)
 
 CORS(app, resources={r"/*": {"origins": "0.0.0.0"}})
-
-app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
 
 @app.errorhandler(404)

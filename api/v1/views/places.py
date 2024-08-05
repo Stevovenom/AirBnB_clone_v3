@@ -7,6 +7,9 @@ from flask import jsonify, request, abort
 from models import storage
 from models.place import Place
 from api.v1.views import app_views
+from models.city import City
+from models.state import State
+from models.amenity import Amenity
 
 
 @app_views.route('/cities/<city_id>/places', methods=['GET'],
@@ -86,3 +89,52 @@ def place_put(place_id):
     place.save()
     place = place.to_json()
     return jsonify(place), 200
+
+
+@app_views.route('/places_search', methods=['POST'], strict_slashes=False)
+def places_search():
+    """ handles POST method for searching places """
+    data = request.get_json()
+    if data is None:
+        abort(400, "Not a JSON")
+
+    places = storage.all("Place").values()
+
+    if not data or (not data.get('states')
+                    and not data.get('cities') and not data.get('amenities')):
+        return jsonify([place.to_json() for place in places])
+
+    states = data.get('states', [])
+    cities = data.get('cities', [])
+    amenities = data.get('amenities', [])
+
+    place_ids = set()
+
+    if states:
+        for state_id in states:
+            state = storage.get("State", state_id)
+            if state:
+                for city in state.cities:
+                    for place in city.places:
+                        place_ids.add(place.id)
+    if cities:
+        for city_id in cities:
+            city = storage.get("City", city_id)
+            if city:
+                for place in city.places:
+                    place_ids.add(place.id)
+
+    filtered_places = []
+    for place in places:
+        if place.id in place_ids or not states and not cities:
+            filtered_places.append(place)
+
+    if amenities:
+        amenity_ids = set(amenities)
+        filtered_places = [
+            place for place in filtered_places
+            if amenity_ids.issubset({amenity.id
+                                    for amenity in place.amenities})
+        ]
+
+    return jsonify([place.to_json() for place in filtered_places])

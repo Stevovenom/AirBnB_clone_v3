@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """ holds class User"""
 import models
+import hashlib
 from models.base_model import BaseModel, Base
 from os import getenv
 import sqlalchemy
@@ -27,3 +28,20 @@ class User(BaseModel, Base):
     def __init__(self, *args, **kwargs):
         """initializes user"""
         super().__init__(*args, **kwargs)
+
+    def __init__(self, *args, **kwargs):
+        """initializes user"""
+        if 'password' in kwargs:
+            kwargs['password'] = self.hash_password(kwargs['password'])
+        super().__init__(*args, **kwargs)
+
+    @staticmethod
+    def hash_password(password):
+        """Hashes a password using MD5"""
+        return hashlib.md5(password.encode()).hexdigest()
+
+    def __setattr__(self, key, value):
+        """Overrides __setattr__ to hash passwords automatically"""
+        if key == 'password':
+            value = self.hash_password(value)
+        super().__setattr__(key, value)

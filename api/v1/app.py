@@ -15,29 +15,17 @@ app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 app.url_map.strict_slashes = False
 
 
-<<<<<<< HEAD
-@app.teardown_appcontext
-def teardown_db(exception):
-    """Close the SQLAlchemy session."""
-    storage.close()
-
-=======
->>>>>>> da43b5b48be4dacdc178dd1c51bcbeec7ede5afd
 @app.errorhandler(404)
 def page_not_found(error):
     """Return a JSON response for a 404 error."""
     return jsonify({'error': 'Not found'}), 404
 
-<<<<<<< HEAD
-=======
-
 @app.teardown_appcontext
 def teardown_db(exception):
     """Close the SQLAlchemy session."""
     storage.close()
 
 
->>>>>>> da43b5b48be4dacdc178dd1c51bcbeec7ede5afd
 if __name__ == "__main__":
     host = getenv('HBNB_API_HOST')
     port = getenv('HBNB_API_PORT')

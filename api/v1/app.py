@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 """Flask server (variable app)"""
 
+from models.state import State
+from models.city import City
 from flask import Flask, jsonify
 from models import storage
 from os import getenv
@@ -20,10 +22,37 @@ def page_not_found(error):
     """Return a JSON response for a 404 error."""
     return jsonify({'error': 'Not found'}), 404
 
+
 @app.teardown_appcontext
 def teardown_db(exception):
     """Close the SQLAlchemy session."""
     storage.close()
+
+
+@app.route('/api/v1/states', methods=['GET'])
+def get_states():
+    """Retrieve all states"""
+    states = storage.all(State).values()
+    return jsonify([state.to_dict() for state in states])
+
+
+@app.route('/api/v1/states/<state_id>/cities', methods=['GET'])
+def get_cities_by_state(state_id):
+    """Retrieve all cities in a given state"""
+    state = storage.get(State, state_id)
+    if not state:
+        return jsonify({"error": "Not found"}), 404
+    cities = state.cities
+    return jsonify([city.to_dict() for city in cities])
+
+
+@app.route('/api/v1/cities/<city_id>', methods=['GET'])
+def get_city(city_id):
+    """Retrieve a city by ID"""
+    city = storage.get(City, city_id)
+    if not city:
+        return jsonify({"error": "Not found"}), 404
+    return jsonify(city.to_dict())
 
 
 if __name__ == "__main__":
